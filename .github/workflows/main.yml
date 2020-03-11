@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@master
         if: github.event.pull_request.merged
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
       - uses: JakeChampion/test@v1
         name: Hello world action step
         if: github.event.pull_request.merged
