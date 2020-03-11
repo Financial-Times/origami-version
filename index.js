@@ -41,6 +41,7 @@ async function main() {
     // });
 
     const tags = await getTags();
+    console.log({tags})
     const versions = tags
       .map(tag => {
         return semver.coerce(tag.name);
