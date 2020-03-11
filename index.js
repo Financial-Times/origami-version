@@ -19,6 +19,7 @@ async function main() {
     });
 
     if (!labels) {
+      core.info('no version label set. Cancelling automated versioning action.');
       return;
     }
 
@@ -27,6 +28,7 @@ async function main() {
     const patch = labels.includes("patch");
 
     if (!major || !minor || !patch) {
+      core.info('no version label set. Cancelling automated versioning action.');
       return;
     }
 
