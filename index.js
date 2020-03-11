@@ -42,7 +42,7 @@ async function main() {
     //   repo: payload.repository.name
     // });
 
-    const {stdout: tags} = exec('git describe --tags `git rev-list --tags --max-count=1`');
+    const {stdout: tags} = await exec('git describe --tags `git rev-list --tags --max-count=1`');
     console.log({ tags });
     const versions = tags
       .map(tag => {
