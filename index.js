@@ -1,5 +1,11 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
+const semver = require('semver');
+const git = require('simple-git')();
+
+const { promisify } = require('util')
+
+const getTags = promisify(git.tags.bind(git))
 
 async function main() {
   try {
@@ -25,16 +31,25 @@ async function main() {
     // The YML workflow will need to set myToken with the GitHub Secret Token
     // myToken: ${{ secrets.GITHUB_TOKEN }}
     // https://help.github.com/en/actions/automating-your-workflow-with-github-actions/authenticating-with-the-github_token#about-the-github_token-secret
-    const myToken = core.getInput("myToken");
+    // const myToken = core.getInput("myToken");
 
-    const octokit = new github.GitHub(myToken);
+    // const octokit = new github.GitHub(myToken);
 
-    const { data } = await octokit.repos.listTags({
-      owner: payload.repository.owner.login,
-      repo: payload.repository.name
+    // const { tags } = await octokit.repos.listTags({
+    //   owner: payload.repository.owner.login,
+    //   repo: payload.repository.name
+    // });
+
+    const tags = await getTags();
+    const versions = tags.map(tag => {
+      return semver.coerce(tag.name);
+    }).filter(version => {
+      return version != null;
     });
 
-    console.log({labels, major, minor, patch, data});
+    versions.sort(semver.rcompare);
+
+    console.log({labels, major, minor, patch, tags});
   } catch (error) {
     core.setFailed(error.message);
   }
