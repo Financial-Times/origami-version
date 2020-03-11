@@ -1,11 +1,13 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 const semver = require("semver");
-const git = require("simple-git")();
+// const git = require("simple-git")();
 
 const { promisify } = require("util");
 
-const getTags = promisify(git.tags.bind(git));
+// const getTags = promisify(git.tags.bind(git));
+
+const exec = promisify(require('child_process').exec);
 
 async function main() {
   try {
@@ -40,8 +42,8 @@ async function main() {
     //   repo: payload.repository.name
     // });
 
-    const tags = await getTags();
-    console.log({tags})
+    const {stdout: tags} = exec('git describe --tags `git rev-list --tags --max-count=1`');
+    console.log({ tags });
     const versions = tags
       .map(tag => {
         return semver.coerce(tag.name);
