@@ -1,0 +1,1 @@
+'use strict';(function(){let a=require("@actions/core"),c=require("@actions/github");try{let b=a.getInput("who-to-greet");console.log(`Hello ${b}!`);let d=(new Date).toTimeString();a.setOutput("time",d);let e=JSON.stringify(c.context.payload,void 0,2);console.log(`The event payload: ${e}`)}catch(b){a.setFailed(b.message)}})()
