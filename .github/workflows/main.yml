@@ -16,4 +16,4 @@ jobs:
         if: github.event.pull_request.merged
         with:
           who-to-greet: 'Mona the Octocat'
-
+          myToken: ${{ secrets.GITHUB_TOKEN }}
