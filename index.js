@@ -30,7 +30,7 @@ async function main() {
 
     console.log({major, minor, patch});
 
-    if (!major || !minor || !patch) {
+    if (!major && !minor && !patch) {
       console.log('no version label set. Cancelling automated versioning action.');
       return;
     }
