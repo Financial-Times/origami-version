@@ -11,7 +11,8 @@ jobs:
         if: github.event.pull_request.merged
         with:
           ref: ${{ github.event.pull_request.merge_commit_sha }}
-      - uses: JakeChampion/test@v12
+          fetch-depth: 0
+      - uses: JakeChampion/test@v13
         name: Hello world action step
         if: github.event.pull_request.merged
         with:
