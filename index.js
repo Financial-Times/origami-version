@@ -42,19 +42,11 @@ async function main() {
     //   repo: payload.repository.name
     // });
 
+    // get previous tag
     const {stdout: tags} = await exec('git describe --tags `git rev-list --tags --max-count=1`');
-    console.log({ tags });
-    const versions = tags
-      .map(tag => {
-        return semver.coerce(tag.name);
-      })
-      .filter(version => {
-        return version != null;
-      });
-
-    versions.sort(semver.rcompare);
-
-    console.log({ versions, labels, major, minor, patch, tags });
+    const version = semver.coerce(tags.split('\n')[0]);
+  
+    console.log({ version, labels, major, minor, patch, tags });
   } catch (error) {
     core.setFailed(error.message);
   }
