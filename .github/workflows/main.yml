@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to test
     steps:
-      - uses: JakeChampion/test@v4
+      - uses: JakeChampion/test@v5
         name: Hello world action step
         if: github.event.pull_request.merged
         with:
