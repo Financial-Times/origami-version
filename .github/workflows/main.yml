@@ -7,6 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to test
     steps:
+      - uses: JakeChampion/test@v1
+        name: Hello world action step
+        if: github.event.pull_request.merged
+        with:
+          who-to-greet: 'Mona the Octocat'
       - uses: actions/checkout@master
         if: github.event.pull_request.merged
         with:
