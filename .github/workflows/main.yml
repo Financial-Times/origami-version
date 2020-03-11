@@ -8,9 +8,9 @@ jobs:
     name: A job to test
     steps:
       - uses: actions/checkout@master
-         if: github.event.pull_request.merged
-         with:
-            ref: ${{ github.event.pull_request.head.ref }}
+        if: github.event.pull_request.merged
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
       - uses: JakeChampion/test@v1
         name: Hello world action step
         if: github.event.pull_request.merged
