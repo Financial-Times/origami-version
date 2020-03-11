@@ -1,11 +1,11 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
-const semver = require('semver');
-const git = require('simple-git')();
+const semver = require("semver");
+const git = require("simple-git")();
 
-const { promisify } = require('util')
+const { promisify } = require("util");
 
-const getTags = promisify(git.tags.bind(git))
+const getTags = promisify(git.tags.bind(git));
 
 async function main() {
   try {
@@ -41,15 +41,17 @@ async function main() {
     // });
 
     const tags = await getTags();
-    const versions = tags.map(tag => {
-      return semver.coerce(tag.name);
-    }).filter(version => {
-      return version != null;
-    });
+    const versions = tags
+      .map(tag => {
+        return semver.coerce(tag.name);
+      })
+      .filter(version => {
+        return version != null;
+      });
 
     versions.sort(semver.rcompare);
 
-    console.log({versions, labels, major, minor, patch, tags});
+    console.log({ versions, labels, major, minor, patch, tags });
   } catch (error) {
     core.setFailed(error.message);
   }
