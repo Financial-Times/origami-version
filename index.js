@@ -17,6 +17,7 @@ async function main() {
     const labels = payload.pull_request.labels.map(label => {
       return label.name;
     });
+    console.log({labels});
 
     if (!labels) {
       console.log('no version label set. Cancelling automated versioning action.');
@@ -26,6 +27,8 @@ async function main() {
     const major = labels.includes("major");
     const minor = labels.includes("minor");
     const patch = labels.includes("patch");
+
+    console.log({major, minor, patch});
 
     if (!major || !minor || !patch) {
       console.log('no version label set. Cancelling automated versioning action.');
