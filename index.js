@@ -11,15 +11,15 @@ async function main() {
 
     // Get the JSON webhook payload for the event that triggered the workflow
     const payload = JSON.stringify(github.context.payload, undefined, 2);
-    // console.log(`The event payload: ${payload}`);
+    console.log(`The event payload: ${payload}`);
 
     const labels = payload.pull_request.labels.map(label => {
       return label.name;
     });
 
-    const major = payload.pull_request.labels.includes("major");
-    const minor = payload.pull_request.labels.includes("minor");
-    const patch = payload.pull_request.labels.includes("patch");
+    const major = labels.includes("major");
+    const minor = labels.includes("minor");
+    const patch = labels.includes("patch");
 
     // This should be a token with access to your repository scoped in as a secret.
     // The YML workflow will need to set myToken with the GitHub Secret Token
