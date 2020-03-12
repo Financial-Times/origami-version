@@ -8,15 +8,15 @@ const exec = promisify(require("child_process").exec);
 function highestReleaseType(labels = []) {
   // Possible release types
   // 'major' | 'premajor' | 'minor' | 'preminor' | 'patch' | 'prepatch' | 'prerelease'
-  const major = labels.includes("major");
+  const major = labels.includes("major") || labels.includes("Major");
   if (major) {
     return "major";
   }
-  const minor = labels.includes("minor");
+  const minor = labels.includes("minor") || labels.includes("Minor");
   if (minor) {
     return "minor";
   }
-  const patch = labels.includes("patch");
+  const patch = labels.includes("patch") || labels.includes("Patch");
   if (patch) {
     return "patch";
   }
