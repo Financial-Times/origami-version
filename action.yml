@@ -1,0 +1,5 @@
+name: 'origami-version'
+description: 'Create a semver git tag based on the semver label a merged pull-request has.'
+runs:
+  using: 'node12'
+  main: 'index.js'

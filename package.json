@@ -1,0 +1,27 @@
+{
+  "name": "origami-version",
+  "version": "1.0.0-dev",
+  "description": "Automated versioning for github projects based on semver labels",
+  "scripts": {
+    "test": "eslint ."
+  },
+  "keywords": [],
+  "author": "Jake Champion <me@jakechampion.name>",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/github": "^2.1.1",
+    "semver": "^7.1.3"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0"
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JakeChampion/test.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JakeChampion/test/issues"
+  },
+  "homepage": "https://github.com/JakeChampion/test#readme"
+}
