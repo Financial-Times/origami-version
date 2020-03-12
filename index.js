@@ -1,11 +1,8 @@
-const core = require("@actions/core");
 const github = require("@actions/github");
 const semver = require("semver");
-// const git = require("simple-git")();
 
 const { promisify } = require("util");
 
-// const getTags = promisify(git.tags.bind(git));
 
 const exec = promisify(require("child_process").exec);
 
@@ -53,29 +50,19 @@ async function main() {
     } else if (patch) {
       version.inc("patch");
     }
-    console.log({ version, labels, major, minor, patch });
 
-    // This should be a token with access to your repository scoped in as a secret.
-    // The YML workflow will need to set myToken with the GitHub Secret Token
-    // myToken: ${{ secrets.GITHUB_TOKEN }}
-    // https://help.github.com/en/actions/automating-your-workflow-with-github-actions/authenticating-with-the-github_token#about-the-github_token-secret
-    // const myToken = core.getInput("myToken");
-
-    // const octokit = new github.GitHub(myToken);
-
-    const { stdout } = await exec(
+    await exec(
       `git tag ${version.version}`
     );
 
-    console.log({stdout});
-
-    const { stdoutt } = await exec(
+    await exec(
       `git push --tags`
     );
 
-    console.log({stdoutt});
+    console.log(`published tag ${version.version}`);
   } catch (error) {
-    core.setFailed(error.message);
+    process.exitCode = 1;
+    console.error(error);
   }
 }
 
