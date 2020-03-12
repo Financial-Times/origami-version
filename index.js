@@ -1,6 +1,6 @@
 "use strict";
 
-const github = require("@actions/github");
+const fs = require("fs");
 const semver = require("semver");
 const { promisify } = require("util");
 const exec = promisify(require("child_process").exec);
@@ -22,11 +22,7 @@ function highestReleaseType(labels = []) {
   }
 }
 
-function getLabelNamesFromPullRequest(github) {
-  // Get the JSON webhook payload for the event that triggered the workflow
-  const payload = github.context.payload;
-
-  // Get the names of the labels which were added to the pull request
+function getLabelNamesFromPullRequest(payload) {
   const labels = payload.pull_request.labels.map(label => {
     return label.name;
   });
@@ -53,7 +49,11 @@ async function pushTags() {
 
 async function main() {
   try {
-    const labels = getLabelNamesFromPullRequest(github);
+    // Get the JSON webhook payload for the event that triggered the workflow
+    const payload = JSON.parse(
+      fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf-8" )
+    );
+    const labels = getLabelNamesFromPullRequest(payload);
 
     const releaseType = highestReleaseType(labels);
 
