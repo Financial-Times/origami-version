@@ -6,29 +6,44 @@ const { promisify } = require("util");
 
 const exec = promisify(require("child_process").exec);
 
+function highestReleaseType(labels) {
+  // Possible release types
+  // 'major' | 'premajor' | 'minor' | 'preminor' | 'patch' | 'prepatch' | 'prerelease'
+  const major = labels.includes("major");
+  if (major) {
+    return 'major';
+  }
+  const minor = labels.includes("minor");
+  if (minor) {
+    return 'minor';
+  }
+  const patch = labels.includes("patch");
+  if (patch) {
+    return 'patch';
+  }
+}
 async function main() {
   try {
     // Get the JSON webhook payload for the event that triggered the workflow
     const payload = github.context.payload;
 
+    // Get the names of the labels which were added to the pull request
     const labels = payload.pull_request.labels.map(label => {
       return label.name;
     });
 
     if (!labels) {
       console.log(
-        "no version label set. Cancelling automated versioning action."
+        "No version label set. Cancelling automated versioning action."
       );
       return;
     }
 
-    const major = labels.includes("major");
-    const minor = labels.includes("minor");
-    const patch = labels.includes("patch");
+    const releaseType = highestReleaseType(labels);
 
-    if (!major && !minor && !patch) {
+    if (!releaseType) {
       console.log(
-        "no version label set. Cancelling automated versioning action."
+        "No version label set. Cancelling automated versioning action."
       );
       return;
     }
@@ -38,15 +53,8 @@ async function main() {
       "git describe --tags `git rev-list --tags --max-count=1` || echo 0"
     );
     const version = semver.coerce(tags.split("\n")[0]);
-
-    if (major) {
-      // 'major' | 'premajor' | 'minor' | 'preminor' | 'patch' | 'prepatch' | 'prerelease'
-      version.inc("major");
-    } else if (minor) {
-      version.inc("minor");
-    } else if (patch) {
-      version.inc("patch");
-    }
+    
+    version.inc(releaseType);
 
     await exec(
       `git tag v${version.version}`
@@ -56,7 +64,7 @@ async function main() {
       `git push --tags`
     );
 
-    console.log(`published tag ${version.version}`);
+    console.log(`Published tag ${version.version}`);
   } catch (error) {
     process.exitCode = 1;
     console.error(error);
