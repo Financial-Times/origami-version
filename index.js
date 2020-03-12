@@ -35,7 +35,7 @@ async function main() {
 
     // get previous tag
     const { stdout: tags } = await exec(
-      "git describe --tags `git rev-list --tags --max-count=1`"
+      "git describe --tags `git rev-list --tags --max-count=1` || echo 0"
     );
     const version = semver.coerce(tags.split("\n")[0]);
 
