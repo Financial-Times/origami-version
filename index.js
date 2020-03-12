@@ -1,7 +1,6 @@
 "use strict";
 
-const fs = require('fs');
-const event = JSON.parse(fs.readFileSync('/github/workflow/event.json').toString())
+const github = require("@actions/github");
 const semver = require("semver");
 const { promisify } = require("util");
 const exec = promisify(require("child_process").exec);
@@ -23,9 +22,12 @@ function highestReleaseType(labels = []) {
   }
 }
 
-function getLabelNamesFromPullRequest(event) {
+function getLabelNamesFromPullRequest(github) {
+  // Get the JSON webhook payload for the event that triggered the workflow
+  const payload = github.context.payload;
+
   // Get the names of the labels which were added to the pull request
-  const labels = event.pull_request.labels.map(label => {
+  const labels = payload.pull_request.labels.map(label => {
     return label.name;
   });
 
@@ -51,7 +53,7 @@ async function pushTags() {
 
 async function main() {
   try {
-    const labels = getLabelNamesFromPullRequest(event);
+    const labels = getLabelNamesFromPullRequest(github);
 
     const releaseType = highestReleaseType(labels);
 
