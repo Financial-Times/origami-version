@@ -1,5 +1,6 @@
 "use strict";
 
+const fs = require('fs');
 const event = JSON.parse(fs.readFileSync('/github/workflow/event.json').toString())
 const semver = require("semver");
 const { promisify } = require("util");
