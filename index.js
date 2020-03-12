@@ -1,43 +1,59 @@
+"use strict";
+
 const github = require("@actions/github");
 const semver = require("semver");
-
 const { promisify } = require("util");
-
-
 const exec = promisify(require("child_process").exec);
 
-function highestReleaseType(labels) {
+function highestReleaseType(labels = []) {
   // Possible release types
   // 'major' | 'premajor' | 'minor' | 'preminor' | 'patch' | 'prepatch' | 'prerelease'
   const major = labels.includes("major");
   if (major) {
-    return 'major';
+    return "major";
   }
   const minor = labels.includes("minor");
   if (minor) {
-    return 'minor';
+    return "minor";
   }
   const patch = labels.includes("patch");
   if (patch) {
-    return 'patch';
+    return "patch";
   }
 }
+
+function getLabelNamesFromPullRequest(github) {
+  // Get the JSON webhook payload for the event that triggered the workflow
+  const payload = github.context.payload;
+
+  // Get the names of the labels which were added to the pull request
+  const labels = payload.pull_request.labels.map(label => {
+    return label.name;
+  });
+
+  return labels;
+}
+
+async function getLatestTagOnCurrentBranch() {
+  const { stdout: tags } = await exec(
+    "git describe --abbrev=0 --tags || echo 0"
+  );
+  const tag = tags.split("\n")[0];
+  return tag;
+}
+
+async function createNewTag(tag) {
+  await exec(`git tag v${tag}`);
+  return;
+}
+
+async function pushTags() {
+  await exec(`git push --tags`);
+}
+
 async function main() {
   try {
-    // Get the JSON webhook payload for the event that triggered the workflow
-    const payload = github.context.payload;
-
-    // Get the names of the labels which were added to the pull request
-    const labels = payload.pull_request.labels.map(label => {
-      return label.name;
-    });
-
-    if (!labels) {
-      console.log(
-        "No version label set. Cancelling automated versioning action."
-      );
-      return;
-    }
+    const labels = getLabelNamesFromPullRequest(github);
 
     const releaseType = highestReleaseType(labels);
 
@@ -48,23 +64,17 @@ async function main() {
       return;
     }
 
-    // get previous tag
-    const { stdout: tags } = await exec(
-      "git describe --tags `git rev-list --tags --max-count=1` || echo 0"
-    );
-    const version = semver.coerce(tags.split("\n")[0]);
-    
-    version.inc(releaseType);
+    const tag = await getLatestTagOnCurrentBranch();
 
-    await exec(
-      `git tag v${version.version}`
-    );
+    const latestVersion = semver.coerce(tag);
 
-    await exec(
-      `git push --tags`
-    );
+    const newVersion = latestVersion.inc(releaseType).version;
 
-    console.log(`Published tag ${version.version}`);
+    await createNewTag(newVersion);
+
+    await pushTags();
+
+    console.log(`Published tag ${newVersion}`);
   } catch (error) {
     process.exitCode = 1;
     console.error(error);
