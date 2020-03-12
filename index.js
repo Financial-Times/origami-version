@@ -59,20 +59,21 @@ async function main() {
     // The YML workflow will need to set myToken with the GitHub Secret Token
     // myToken: ${{ secrets.GITHUB_TOKEN }}
     // https://help.github.com/en/actions/automating-your-workflow-with-github-actions/authenticating-with-the-github_token#about-the-github_token-secret
-    const myToken = core.getInput("myToken");
+    // const myToken = core.getInput("myToken");
 
-    const octokit = new github.GitHub(myToken);
+    // const octokit = new github.GitHub(myToken);
 
-    const a = await octokit.git.createTag({
-      owner:payload.repository.owner.login,
-      repo:payload.repository.name,
-      tag: version.version,
-      message: 'test',
-      object: payload.pull_request.merge_commit_sha,
-      type: 'commit'
-    });
+    const { stdout } = await exec(
+      `git tag ${version.version}`
+    );
 
-    console.log({a});
+    console.log({stdout});
+
+    const { stdoutt } = await exec(
+      `git push --tags`
+    );
+
+    console.log({stdoutt});
   } catch (error) {
     core.setFailed(error.message);
   }
