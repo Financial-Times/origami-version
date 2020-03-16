@@ -1,0 +1,12 @@
+{
+	"description": "GitHub action to create a semver git tag and release based on the semver label a pull-request has",
+	"origamiType": null,
+	"origamiVersion": 1,
+	"keywords": [],
+	"support": "https://github.com/Financial-Times/origami-version/issues",
+	"supportStatus": "experimental",
+	"supportContact": {
+		"email": "origami.support@ft.com",
+		"slack": "financialtimes/origami-support"
+	}
+}
