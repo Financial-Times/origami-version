@@ -4,6 +4,7 @@ const fs = require("fs");
 const semver = require("semver");
 const { promisify } = require("util");
 const exec = promisify(require("child_process").exec);
+const core = require('@actions/core');
 const github = require("@actions/github");
 
 function highestReleaseType(labels = []) {
