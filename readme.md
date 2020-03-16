@@ -40,5 +40,7 @@ jobs:
       - uses: Financial-Times/origami-version@master
         name: Create new version/tag
         if: github.event.pull_request.merged  # Only run on merged pull-requests
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
 ```
