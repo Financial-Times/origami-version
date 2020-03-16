@@ -54,6 +54,9 @@ async function main() {
     const payload = JSON.parse(
       fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf-8" )
     );
+
+    const octokit = new github.GitHub(core.getInput('github-token'));
+
     const labels = getLabelNamesFromPullRequest(payload);
 
     const releaseType = highestReleaseType(labels);
@@ -79,14 +82,14 @@ async function main() {
     const repo = payload.repository.name;
     const releaseTitle = `${releaseType}: ${payload.pull_request.title}`;
 
-    await github.repos.createRelease({
+    await octokit.repos.createRelease({
       owner,
       repo,
       tag_name,
       name: releaseTitle
     });
 
-    await github.issues.createComment({
+    await octokit.issues.createComment({
       owner,
       repo,
       issue_number: payload.pull_request.number,
@@ -98,7 +101,7 @@ async function main() {
     process.exitCode = 1;
     console.error(error);
     try {
-      await github.issues.createComment({
+      await octokit.issues.createComment({
         owner,
         repo,
         issue_number: payload.pull_request.number,
