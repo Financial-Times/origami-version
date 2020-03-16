@@ -85,9 +85,27 @@ async function main() {
       name: releaseTitle
     });
 
+    await github.issues.createComment({
+      owner,
+      repo,
+      issue_number: payload.pull_request.number,
+      body: `:tada: This PR is included in version ${tag_name} :tada:`
+    });
+
+    console.log(`Published tag ${tag_name}`);
   } catch (error) {
     process.exitCode = 1;
     console.error(error);
+    try {
+      await github.issues.createComment({
+        owner,
+        repo,
+        issue_number: payload.pull_request.number,
+        body: `We tried to version this automatically but we failed. Please view the errors at https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${GITHUB_RUN_ID}?check_suite_focus=true`
+      });
+    } catch (e) {
+      console.error(error);
+    }
   }
 }
 
