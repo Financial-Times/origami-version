@@ -41,7 +41,7 @@ async function getLatestTagOnCurrentBranch() {
 }
 
 async function createNewTag(tag) {
-  await exec(`git tag v${tag}`);
+  await exec(`git tag ${tag}`);
   return;
 }
 
@@ -73,7 +73,7 @@ async function main() {
 
     const latestVersion = semver.coerce(tag);
 
-    const tag_name = latestVersion.inc(releaseType).version;
+    const tag_name = 'v' + latestVersion.inc(releaseType).version;
 
     await createNewTag(tag_name);
 
