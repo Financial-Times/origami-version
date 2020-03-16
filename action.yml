@@ -1,5 +1,9 @@
 name: 'origami-version'
-description: 'Create a semver git tag based on the semver label a merged pull-request has.'
+description: 'Create a SemVer git tag and GitHub release based on the semver label a merged pull-request has.'
+inputs:
+  github-token:
+    description: The GitHub token used create the release and post comments
+    required: true
 runs:
   using: 'node12'
   main: 'index.js'
