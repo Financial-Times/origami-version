@@ -68,13 +68,23 @@ async function main() {
 
     const latestVersion = semver.coerce(tag);
 
-    const newVersion = latestVersion.inc(releaseType).version;
+    const tag_name = latestVersion.inc(releaseType).version;
 
-    await createNewTag(newVersion);
+    await createNewTag(tag_name);
 
     await pushTags();
 
-    console.log(`Published tag ${newVersion}`);
+    const owner = payload.repository.owner.login;
+    const repo = payload.repository.name;
+    const releaseTitle = `${releaseType}: ${payload.pull_request.title}`;
+
+    await github.repos.createRelease({
+      owner,
+      repo,
+      tag_name,
+      name: releaseTitle
+    });
+
   } catch (error) {
     process.exitCode = 1;
     console.error(error);
