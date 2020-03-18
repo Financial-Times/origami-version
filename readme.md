@@ -46,9 +46,9 @@ mkdir -p .github/workflows && curl https://raw.githubusercontent.com/Financial-T
 
 The labels this actions uses are:
 
-- major
-- minor
-- patch
+- release:major
+- release:minor
+- release:patch
 
 ## Development
 

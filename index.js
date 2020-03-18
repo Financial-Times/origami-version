@@ -10,15 +10,15 @@ const github = require("@actions/github");
 function highestReleaseType(labels = []) {
   // Possible release types
   // 'major' | 'premajor' | 'minor' | 'preminor' | 'patch' | 'prepatch' | 'prerelease'
-  const major = labels.includes("major") || labels.includes("Major");
+  const major = labels.includes("release:major");
   if (major) {
     return "major";
   }
-  const minor = labels.includes("minor") || labels.includes("Minor");
+  const minor = labels.includes("release:minor");
   if (minor) {
     return "minor";
   }
-  const patch = labels.includes("patch") || labels.includes("Patch");
+  const patch = labels.includes("release:patch");
   if (patch) {
     return "patch";
   }
