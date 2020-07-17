@@ -1,28 +1,11 @@
-"use strict";
+'use strict';
 
-const fs = require("fs");
-const semver = require("semver");
-const { promisify } = require("util");
-const exec = promisify(require("child_process").exec);
+const fs = require('fs');
+const { promisify } = require('util');
+const exec = promisify(require('child_process').exec);
 const core = require('@actions/core');
-const github = require("@actions/github");
-
-function highestReleaseType(labels = []) {
-  // Possible release types
-  // 'major' | 'premajor' | 'minor' | 'preminor' | 'patch' | 'prepatch' | 'prerelease'
-  const major = labels.includes("release:major");
-  if (major) {
-    return "major";
-  }
-  const minor = labels.includes("release:minor");
-  if (minor) {
-    return "minor";
-  }
-  const patch = labels.includes("release:patch");
-  if (patch) {
-    return "patch";
-  }
-}
+const github = require('@actions/github');
+const { highestReleaseTypeFromLabels, incrementTag } = require('./lib');
 
 function getLabelNamesFromPullRequest(payload) {
   const labels = payload.pull_request.labels.map(label => {
@@ -34,9 +17,9 @@ function getLabelNamesFromPullRequest(payload) {
 
 async function getLatestTagOnCurrentBranch() {
   const { stdout: tags } = await exec(
-    "git describe --abbrev=0 --tags || echo 0"
+    'git describe --abbrev=0 --tags || echo 0'
   );
-  const tag = tags.split("\n")[0];
+  const tag = tags.split('\n')[0];
   return tag;
 }
 
@@ -46,58 +29,53 @@ async function createNewTag(tag) {
 }
 
 async function pushTags() {
-  await exec(`git push --tags`);
+  await exec('git push --tags');
 }
 
 async function main() {
+  let payload;
+  let octokit;
+  let owner;
+  let repo;
+
   try {
     // Get the JSON webhook payload for the event that triggered the workflow
-    const payload = JSON.parse(
-      fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf-8" )
+    payload = JSON.parse(
+      fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf-8')
     );
-
-    const octokit = new github.GitHub(core.getInput('github-token'));
-
+    owner = payload.repository.owner.login;
+    repo = payload.repository.name;
+    // Create an authenticated Github instance.
+    octokit = new github.GitHub(core.getInput('github-token'));
+    // Increment the last tag based on release labels if found.
     const labels = getLabelNamesFromPullRequest(payload);
-
-    const releaseType = highestReleaseType(labels);
-
+    const releaseType = highestReleaseTypeFromLabels(labels);
     if (!releaseType) {
       console.log(
-        "No version label set. Cancelling automated versioning action."
+        'No version label set. Cancelling automated versioning action.'
       );
       return;
     }
-
-    const tag = await getLatestTagOnCurrentBranch();
-
-    const latestVersion = semver.coerce(tag);
-
-    const tag_name = 'v' + latestVersion.inc(releaseType).version;
-
-    await createNewTag(tag_name);
-
+    const latestTag = await getLatestTagOnCurrentBranch();
+    const newTag = incrementTag(latestTag, releaseType);
+    await createNewTag(newTag);
     await pushTags();
-
-    const owner = payload.repository.owner.login;
-    const repo = payload.repository.name;
+    // Create a release
     const releaseTitle = `${releaseType}: ${payload.pull_request.title}`;
-
     await octokit.repos.createRelease({
       owner,
       repo,
-      tag_name,
+      newTag,
       name: releaseTitle
     });
-
+    // Report actions
     await octokit.issues.createComment({
       owner,
       repo,
       issue_number: payload.pull_request.number,
-      body: `:tada: This PR is included in version ${tag_name} :tada:`
+      body: `:tada: This PR is included in version ${newTag} :tada:`
     });
-
-    console.log(`Published tag ${tag_name}`);
+    console.log(`Published tag ${newTag}`);
   } catch (error) {
     process.exitCode = 1;
     console.error(error);
@@ -106,7 +84,7 @@ async function main() {
         owner,
         repo,
         issue_number: payload.pull_request.number,
-        body: `We tried to version this automatically but we failed. Please view the errors at https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${GITHUB_RUN_ID}?check_suite_focus=true`
+        body: `We tried to version this automatically but we failed. Please view the errors at https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID}?check_suite_focus=true`
       });
     } catch (e) {
       console.error(error);
