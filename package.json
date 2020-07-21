@@ -3,7 +3,7 @@
   "version": "1.0.0-dev",
   "description": "Automated versioning for github projects based on semver labels",
   "scripts": {
-    "test": "eslint ."
+    "test": "eslint .; mocha --forbid-only \"test/**/*.test.js\""
   },
   "keywords": [],
   "author": "Jake Champion <me@jakechampion.name>",
@@ -21,5 +21,10 @@
   "bugs": {
     "url": "https://github.com/JakeChampion/test/issues"
   },
-  "homepage": "https://github.com/JakeChampion/test#readme"
+  "homepage": "https://github.com/JakeChampion/test#readme",
+  "devDependencies": {
+    "eslint": "^7.4.0",
+    "mocha": "^8.0.1",
+    "proclaim": "^3.6.0"
+  }
 }
