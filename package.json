@@ -3,7 +3,7 @@
   "version": "1.0.0-dev",
   "description": "Automated versioning for github projects based on semver labels",
   "scripts": {
-    "test": "eslint .; mocha --forbid-only \"test/**/*.test.js\""
+    "test": "eslint . && mocha --forbid-only \"test/**/*.test.js\""
   },
   "keywords": [],
   "author": "Jake Champion <me@jakechampion.name>",
