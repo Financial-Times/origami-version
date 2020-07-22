@@ -65,7 +65,7 @@ async function main() {
     await octokit.repos.createRelease({
       owner,
       repo,
-      newTag,
+      tag_name: newTag,
       name: releaseTitle
     });
     // Report actions
