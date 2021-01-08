@@ -14,6 +14,15 @@ jobs:
           fetch-depth: 0
       - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/* # Get all tags from the origin
         if: github.event.pull_request.merged # Only run on merged pull-requests
+      - run: git config --global user.email "origami.support@ft.com";
+      - run: git config --global user.name "origamiserviceuser [bot]";
+      - name: Use Node.js
+        uses: actions/setup-node@v2.1.4
+        with:
+          node-version: '12.x'
+      - run: npm ci
+      - run: npm run build
+      - run: git add dist && git commit -m 'build new version of the bundled action'
       - uses: Financial-Times/origami-version@v1
         name: Create new version/tag
         if: github.event.pull_request.merged # Only run on merged pull-requests
