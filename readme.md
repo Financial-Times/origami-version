@@ -28,7 +28,7 @@ jobs:
           ref: ${{ github.event.pull_request.merge_commit_sha }} # Checkout the merged commit
           fetch-depth: 0
       - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/* # Get all tags from the origin
-      - uses: Financial-Times/origami-version@v1
+      - uses: Financial-Times/origami-version@v1.1.0
         name: Create new version/tag
         if: github.event.pull_request.merged  # Only run on merged pull-requests
         with:
