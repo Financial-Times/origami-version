@@ -14,7 +14,7 @@
     "@actions/github": "^2.2.0",
     "semver": "^7.3.4"
   },
-  "main": "./dist/index.js",
+  "main": "./index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/JakeChampion/test.git"
