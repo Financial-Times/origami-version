@@ -5,7 +5,7 @@ const { promisify } = require('util');
 const exec = promisify(require('child_process').exec);
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { highestReleaseTypeFromLabels, incrementTag } = require('./lib');
+const { releaseTypeFromLabels, incrementTag } = require('./lib');
 
 function getLabelNamesFromPullRequest(payload) {
   const labels = payload.pull_request.labels.map(label => {
@@ -49,7 +49,7 @@ async function main() {
     octokit = new github.GitHub(core.getInput('github-token'));
     // Increment the last tag based on release labels if found.
     const labels = getLabelNamesFromPullRequest(payload);
-    const releaseType = highestReleaseTypeFromLabels(labels);
+    const releaseType = releaseTypeFromLabels(labels);
     if (!releaseType) {
       console.log(
         'No version label set. Cancelling automated versioning action.'

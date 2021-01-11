@@ -1,9 +1,9 @@
 'use strict';
 
 const proclaim = require('proclaim');
-const { highestReleaseTypeFromLabels, incrementTag } = require('../lib');
+const { releaseTypeFromLabels, incrementTag } = require('../lib');
 
-describe('highestReleaseTypeFromLabels', function () {
+describe('releaseTypeFromLabels', function () {
 	const majorLabel = 'release:major';
 	const minorLabel = 'release:minor';
 	const patchLabel = 'release:patch';
@@ -15,39 +15,53 @@ describe('highestReleaseTypeFromLabels', function () {
 
 	it('should return the corresponding release type given a single Origami release label', function () {
 		for (const { expectedType, releaseLabel } of Object.entries(typeToReleaseLabel)) {
-			const actualType = highestReleaseTypeFromLabels([releaseLabel]);
+			const actualType = releaseTypeFromLabels([releaseLabel]);
 			proclaim.equal(actualType, expectedType);
 		}
 	});
 
-	it('should return the highest release type given multiple labels', function () {
+	it('should throw an error if given multiple release type labels', function () {
 		const data = [
 			{
 				labels: ['release:major-test-dummy', minorLabel, majorLabel, patchLabel, 'zzz', 'aaa', '111'],
-				expectedType: 'major',
+				errorMessage: `More than one release label was applied, origami-version only works when one release label is applied to avoid behaviour a user may find surprising.
+The labels which were applied are: [
+ "release:major-test-dummy",
+ "release:minor",
+ "release:major",
+ "release:patch",
+ "zzz",
+ "aaa",
+ "111"
+]`,
 			},
 			{
 				labels: ['release:lies', patchLabel, 'zzz', minorLabel, 'aaa', '111'],
-				expectedType: 'minor',
-			},
-			{
-				labels: ['release:major-test-dummy', 'zzz', 'aaa', '111', patchLabel],
-				expectedType: 'patch',
-			},
+				errorMessage: `More than one release label was applied, origami-version only works when one release label is applied to avoid behaviour a user may find surprising.
+The labels which were applied are: [
+ "release:lies",
+ "release:patch",
+ "zzz",
+ "release:minor",
+ "aaa",
+ "111"
+]`,
+			}
 		];
-		for (const { labels, expectedType } of data) {
-			const actualType = highestReleaseTypeFromLabels(labels);
-			proclaim.equal(actualType, expectedType);
+		for (const { labels, errorMessage } of data) {
+			proclaim.throws(function(){
+				releaseTypeFromLabels(labels);
+			}, errorMessage);
 		}
 	});
 
 	it('should return `null` given no Origami release labels', function () {
-		const actualType = highestReleaseTypeFromLabels(['release:major-test-dummy', 'zzz', 'aaa', '111']);
+		const actualType = releaseTypeFromLabels(['release:major-test-dummy', 'zzz', 'aaa', '111']);
 		proclaim.isNull(actualType);
 	});
 
 	it('should return `null` given no labels at all', function () {
-		const actualType = highestReleaseTypeFromLabels([]);
+		const actualType = releaseTypeFromLabels([]);
 		proclaim.isNull(actualType);
 	});
 });
