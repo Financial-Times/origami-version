@@ -23,7 +23,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: git add dist && git commit -m 'build new version of the bundled action'
-      - uses: Financial-Times/origami-version@v1
+      - uses: Financial-Times/origami-version@v1.1.0
         name: Create new version/tag
         if: github.event.pull_request.merged # Only run on merged pull-requests
         with:
