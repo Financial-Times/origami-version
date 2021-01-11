@@ -23,7 +23,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: git add dist && git commit -m 'build new version of the bundled action'
-      - uses: ./dist/main.js
+      - uses: ./
         name: Create new version/tag
         if: github.event.pull_request.merged # Only run on merged pull-requests
         with:
