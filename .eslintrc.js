@@ -33,15 +33,12 @@ module.exports = {
 		'prefer-const': 1,
 		'no-const-assign': 2
 	},
-	'globals': {
-		'after': true,
-		'afterEach': true,
-		'before': true,
-		'beforeEach': true,
-		'describe': true,
-		'fetch': true,
-		'it': true,
-		'xdescribe': true,
-		'xit': true
-	}
+	overrides: [
+		{
+			files: ['test/**/*.test.js'],
+			env: {
+				mocha: true,
+			}
+		},
+	],
 };

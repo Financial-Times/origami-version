@@ -72,33 +72,79 @@ describe('incrementTag', function () {
 		proclaim.equal(incrementTag('v1.0.0', 'major'), 'v2.0.0');
 		proclaim.equal(incrementTag('v1.0.0', 'minor'), 'v1.1.0');
 		proclaim.equal(incrementTag('v1.0.0', 'patch'), 'v1.0.1');
+		proclaim.equal(incrementTag('v1.0.0', 'beta'), 'v1.0.1-beta.0');
 
 		// without a `v`
 		proclaim.equal(incrementTag('1.0.0', 'major'), 'v2.0.0');
 		proclaim.equal(incrementTag('1.0.0', 'minor'), 'v1.1.0');
 		proclaim.equal(incrementTag('1.0.0', 'patch'), 'v1.0.1');
+		proclaim.equal(incrementTag('1.0.0', 'beta'), 'v1.0.1-beta.0');
 	});
 
-	it('should increment a valid pre release semver tag by the release type', function () {
-		// releasing a major after a major pre-release releases that major
-		proclaim.equal(incrementTag('v2.0.0-beta.1', 'major'), 'v2.0.0');
-		// releasing a major after a minor/patch pre-release releases the next major
-		proclaim.equal(incrementTag('v2.0.1-beta.1', 'major'), 'v3.0.0');
-		proclaim.equal(incrementTag('v2.1.0-beta.1', 'major'), 'v3.0.0');
-		// releasing a minor after a minor pre-release releases that minor
-		proclaim.equal(incrementTag('v2.1.0-beta.1', 'minor'), 'v2.1.0');
-		// releasing a minor after a patch/major pre-release releases the next minor
-		proclaim.equal(incrementTag('v2.0.1-beta.1', 'minor'), 'v2.1.0');
-		// releasing a minor after a major pre-release releases the major
-		proclaim.equal(incrementTag('v2.0.0-beta.1', 'minor'), 'v2.0.0');
-		// releasing a patch after a minor pre-release releases that minor
-		proclaim.equal(incrementTag('v2.1.0-beta.1', 'minor'), 'v2.1.0');
-		// releasing a patch after a patch pre-release releases that patch
-		proclaim.equal(incrementTag('v2.0.1-beta.1', 'patch'), 'v2.0.1');
-		// releasing a patch after a minor pre-release releases the minor
-		proclaim.equal(incrementTag('v2.1.0-beta.1', 'patch'), 'v2.1.0');
-		// releasing a patch after a major pre-release releases the major
-		proclaim.equal(incrementTag('v2.0.0-beta.1', 'patch'), 'v2.0.0');
+	context('releasing a major after a major pre-release releases that major', function(){
+		it('should increment a valid pre release semver tag by the release type', function () {
+			proclaim.equal(incrementTag('v2.0.0-beta.1', 'major'), 'v2.0.0');
+		});
+	});
+	context('releasing a major after a patch pre-release releases the next major', function(){
+		it('should increment a valid pre release semver tag by the release type', function () {
+			proclaim.equal(incrementTag('v2.0.1-beta.1', 'major'), 'v3.0.0');
+		});
+	});
+	context('releasing a major after a minor pre-release releases the next major', function(){
+		it('should increment a valid pre release semver tag by the release type', function () {
+				proclaim.equal(incrementTag('v2.1.0-beta.1', 'major'), 'v3.0.0');
+		});
+	});
+	context('releasing a minor after a minor pre-release releases that minor', function(){
+		it('should increment a valid pre release semver tag by the release type', function () {
+			proclaim.equal(incrementTag('v2.1.0-beta.1', 'minor'), 'v2.1.0');
+		});
+	});
+	context('releasing a minor after a patch/major pre-release releases the next minor', function(){
+		it('should increment a valid pre release semver tag by the release type', function () {
+			proclaim.equal(incrementTag('v2.0.1-beta.1', 'minor'), 'v2.1.0');
+		});
+	});
+	context('releasing a minor after a major pre-release releases the major', function(){
+		it('should increment a valid pre release semver tag by the release type', function () {
+			proclaim.equal(incrementTag('v2.0.0-beta.1', 'minor'), 'v2.0.0');
+		});
+	});
+	context('releasing a minor after a minor pre-release releases that minor', function(){
+		it('should increment a valid pre release semver tag by the release type', function () {
+			proclaim.equal(incrementTag('v2.1.0-beta.1', 'minor'), 'v2.1.0');
+		});
+	});
+	context('releasing a patch after a patch pre-release releases that patch', function(){
+		it('should increment a valid pre release semver tag by the release type', function () {
+			proclaim.equal(incrementTag('v2.0.1-beta.1', 'patch'), 'v2.0.1');
+		});
+	});
+	context('releasing a patch after a minor pre-release releases the minor', function(){
+		it('should increment a valid pre release semver tag by the release type', function () {
+			proclaim.equal(incrementTag('v2.1.0-beta.1', 'patch'), 'v2.1.0');
+		});
+	});
+	context('releasing a patch after a major pre-release releases the major', function(){
+		it('should increment a valid pre release semver tag by the release type', function () {
+			proclaim.equal(incrementTag('v2.0.0-beta.1', 'patch'), 'v2.0.0');
+		});
+	});
+	context('releasing a beta after a patch pre-release releases that patch', function(){
+		it('should increment the pre release version', function () {
+			proclaim.equal(incrementTag('v2.0.1-beta.1', 'beta'), 'v2.0.1-beta.2');
+		});
+	});
+	context('releasing a beta after a minor pre-release releases the minor', function(){
+		it('should increment the pre release version', function () {
+			proclaim.equal(incrementTag('v2.1.0-beta.1', 'beta'), 'v2.1.0-beta.2');
+		});
+	});
+	context('releasing a beta after a major pre-release releases the major', function(){
+		it('should increment the pre release version', function () {
+			proclaim.equal(incrementTag('v2.0.0-beta.1', 'beta'), 'v2.0.0-beta.2');
+		});
 	});
 
 	it('should increment a valid semver tag with whitespace by the release type', function () {
