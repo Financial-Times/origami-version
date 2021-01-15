@@ -5,15 +5,7 @@ const { promisify } = require('util');
 const exec = promisify(require('child_process').exec);
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { releaseTypeFromLabels, incrementTag } = require('./lib');
-
-function getLabelNamesFromPullRequest(payload) {
-  const labels = payload.pull_request.labels.map(label => {
-    return label.name;
-  });
-
-  return labels;
-}
+const { releaseTypeFromLabels } = require('./lib');
 
 async function getLatestTagOnCurrentBranch() {
   const { stdout: tags } = await exec(
@@ -23,13 +15,12 @@ async function getLatestTagOnCurrentBranch() {
   return tag;
 }
 
-async function createNewTag(tag) {
-  await exec(`git tag ${tag}`);
-  return;
-}
+function getLabelNamesFromPullRequest(payload) {
+  const labels = payload.pull_request.labels.map(label => {
+    return label.name;
+  });
 
-async function pushTags() {
-  await exec('git push --tags');
+  return labels;
 }
 
 async function main() {
@@ -56,11 +47,13 @@ async function main() {
       );
       return;
     }
-    const latestTag = await getLatestTagOnCurrentBranch();
-    const newTag = incrementTag(latestTag, releaseType);
-    await createNewTag(newTag);
-    await pushTags();
+
+    await exec(`git checkout ${process.env.GITHUB_BASE_REF}`);
+    await exec(`npm version ${releaseType}`);
+    await exec('git push --tags');
+
     // Create a release
+    const newTag = await getLatestTagOnCurrentBranch();
     const releaseTitle = `${releaseType}: ${payload.pull_request.title}`;
     await octokit.repos.createRelease({
       owner,
