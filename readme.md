@@ -41,7 +41,6 @@ You can do this by running the following command from a repo:
 mkdir -p .github/workflows && curl https://raw.githubusercontent.com/Financial-Times/origami-labels/v1.0.0/example.yml --output .github/workflows/automatic-tag-and-release.yml
 ```
 
-
 ## Labels
 
 The labels this actions uses are:
