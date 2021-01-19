@@ -49,7 +49,7 @@ async function main() {
     octokit = new github.GitHub(core.getInput('github-token'));
     // Increment the last tag based on release labels if found.
     const labels = getLabelNamesFromPullRequest(payload);
-    console.log(`Found labels: ${labels.join(', ')}`);
+    console.log(`Found labels: "${labels.join('", "')}".`);
     const releaseType = releaseTypeFromLabels(labels);
     if (!releaseType) {
       console.log(
@@ -59,6 +59,7 @@ async function main() {
     }
     console.log(`Calculating the version for a "${releaseType}" release.`);
     const latestTag = await getLatestTagOnCurrentBranch();
+    console.log(`Found "${latestTag}" as the latest release.`);
     const newTag = incrementTag(latestTag, releaseType);
     console.log(`Creating a "${newTag}" release.`);
     await createNewTag(newTag);
