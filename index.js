@@ -17,7 +17,7 @@ function getLabelNamesFromPullRequest(payload) {
 
 async function getLatestTagOnCurrentBranch() {
   const { stdout: tags } = await exec(
-    'git describe --abbrev=0 --tags || echo 0'
+    'git describe --tags `git rev-list --tags --max-count=1` || echo 0'
   );
   const tag = tags.split('\n')[0];
   return tag;
