@@ -10,6 +10,7 @@ jobs:
       - uses: actions/checkout@v2
         if: github.event.pull_request.merged # Only run on merged pull-requests
         with:
+          token: ${{ secrets.ORIGAMI_GITHUB_TOKEN }}
           ref: ${{ github.event.pull_request.merge_commit_sha }} # Checkout the merged commit
           fetch-depth: 0
       - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/* # Get all tags from the origin
