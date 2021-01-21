@@ -41,6 +41,34 @@ You can do this by running the following command from a repo:
 mkdir -p .github/workflows && curl https://raw.githubusercontent.com/Financial-Times/origami-labels/v1.0.0/example.yml --output .github/workflows/automatic-tag-and-release.yml
 ```
 
+Alternatively, use `origami-version` to calculate a new release version based on the release labels applied to a Github Pull Request without making the new release. Do this by setting the `output_only` option. This is useful to feed into another Github Action for a customised release process.
+
+```yml
+on:
+  pull_request:
+    types: [closed] # Merged pull-requests count as closed pull-requests.
+
+jobs:
+  create-new-version:
+    runs-on: ubuntu-latest
+    name: Create new version/tag
+    steps:
+      - uses: actions/checkout@f90c7b395dac7c5a277c1a6d93d5057c1cddb74e
+        if: github.event.pull_request.merged # Only run on merged pull-requests
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }} # Checkout the merged commit
+          fetch-depth: 0
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/* # Get all tags from the origin
+      - uses: Financial-Times/origami-version@v1.1.2
+        name: Get new version
+        if: github.event.pull_request.merged  # Only run on merged pull-requests
+        with:
+          output_only: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+
+
 ## Labels
 
 The labels this actions uses are:

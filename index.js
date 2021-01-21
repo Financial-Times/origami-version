@@ -61,10 +61,21 @@ async function main() {
     const latestTag = await getLatestTagOnCurrentBranch();
     console.log(`Found "${latestTag}" as the latest release.`);
     const newTag = incrementTag(latestTag, releaseType);
-    console.log(`Creating a "${newTag}" release.`);
+
+    // Output new tag as `VERSION`.
+    console.log(`The next version is "${newTag}".`);
+    core.setOutput('VERSION', newTag);
+
+    // Return if the 'output only' option is set, without
+    // actually making a new tag/release.
+    const outputOnly = process.env.INPUT_OUTPUT_ONLY;
+    if (outputOnly) {
+      return;
+    }
+
+    // Create a release
     await createNewTag(newTag);
     await pushTags();
-    // Create a release
     const releaseTitle = `${releaseType}: ${payload.pull_request.title}`;
     await octokit.repos.createRelease({
       owner,
