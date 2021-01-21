@@ -1,0 +1,64 @@
+# When a pull request is merged with release labels and there are no tags on the
+# commit create a new release PR, with updated package.json, built assets, and
+# tag.
+
+name: Create A Release Pull Request
+on:
+  pull_request:
+    types: [closed] # Merged pull-requests count as closed pull-requests.
+    tags-ignore: **  # When there are no tags
+jobs:
+  create-version-pr:
+    name: Create A Pull Request To Release A New Version
+    runs-on: ubuntu-latest
+    # Only run on merged pull-requests with a release label
+    if: |
+      github.event.pull_request.merged &&
+      (contains(github.event.issue.labels.*.name, 'release:beta') ||
+      contains(github.event.issue.labels.*.name, 'release:major') ||
+      contains(github.event.issue.labels.*.name, 'release:minor') ||
+      contains(github.event.issue.labels.*.name, 'release:patch'))
+    steps:
+      - name: Set up node
+        uses: actions/setup-node@v2.1.4
+        with:
+          node-version: '15.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Checkout the project repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }} # Checkout the merged commit
+          fetch-depth: 0
+
+      - name: Find the next version of the project to release
+        uses: Financial-Times/origami-version@v1
+        with:
+          output-only: true
+          github-token: ${{ secrets.ORIGAMI_GITHUB_TOKEN }}
+
+      - name: Error if the next version wasn't found
+        if: secrets.ORIGAMI_GITHUB_TOKEN == null
+        run: exit 1
+
+      - name: Build the new version
+        id: version
+        run: |
+          npm run build &&
+          git add dist &&
+          git commit -m 'Build version ${{ steps.version.outputs.VERSION }} of the action.' -m '${{ github.event.pull_request.url }}' &&
+          npm version ${{ steps.version.outputs.VERSION }}
+
+      - name: Open a pull request for the new version
+        uses: peter-evans/create-pull-request@v3
+        with:
+          title: Release ${ steps.version.outputs.VERSION }
+          body: This is an automated pull request to release version ${{ steps.version.outputs.VERSION }} with changes including ${{ github.event.pull_request.url }}.
+          branch: release-${ steps.version.outputs.VERSION }
+          base: ${{ github.base_ref }}
+
+      - name: Log details
+        run: |
+          echo "Version '${{ steps.version.outputs.VERSION }}'"
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"

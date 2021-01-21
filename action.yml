@@ -4,6 +4,9 @@ inputs:
   github-token:
     description: The GitHub token used create the release and post comments
     required: true
+outputs:
+  VERSION:
+    description: "The release version"
 runs:
   using: 'node12'
   main: 'dist/main.js'
