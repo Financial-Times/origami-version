@@ -1,86 +1,57 @@
 
 # Origami Version
 
-GitHub action to create a semver git tag and release based on the semver label a pull-request has.
+GitHub action to calculate the version to release based on the release labels a pull-request has.
 
+The labels this actions uses are:
+- `release:major`
+- `release:minor`
+- `release:patch`
+- `release:beta`
+
+Where `release:beta` may be used alone or in conjunction with any of the other 3 release labels.
 
 ## Usage
 
-To use this action, create the following file in your GitHub repo:
-
-```
-.github/workflows/automatic-tag-and-release.yml
-```
+To use this action create a job that runs on closed pull requests. Ensure the closed pull request was merged as part of the job. The action outputs `VERSION` which may be used in other steps of your job.
 
 ```yml
+name: Origami Version Example
 on:
   pull_request:
     types: [closed] # Merged pull-requests count as closed pull-requests.
-
 jobs:
-  create-new-version:
+  output-next-version:
+    name: Output the version which should be released
     runs-on: ubuntu-latest
-    name: Create new version/tag
+    if: github.event.pull_request.merged # Only run on merged pull-requests
     steps:
-      - uses: actions/checkout@f90c7b395dac7c5a277c1a6d93d5057c1cddb74e
-        if: github.event.pull_request.merged # Only run on merged pull-requests
+      - name: Set up node
+        uses: actions/setup-node@v2.1.4
+        with:
+          node-version: '15.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Checkout the project repository
+        uses: actions/checkout@v2
         with:
           ref: ${{ github.event.pull_request.merge_commit_sha }} # Checkout the merged commit
           fetch-depth: 0
-      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/* # Get all tags from the origin
-      - uses: Financial-Times/origami-version@v1.1.2
-        name: Create new version/tag
-        if: github.event.pull_request.merged  # Only run on merged pull-requests
+
+      - name: Find the next version of the project to release
+        uses: Financial-Times/origami-version@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          output-only: true
+          github-token: ${{ secrets.ORIGAMI_GITHUB_TOKEN }}
+
+      - name: Error if the next version wasn't found
+        if: secrets.ORIGAMI_GITHUB_TOKEN == null
+        run: exit 1
+
+      - name: Output Version Found
+        run: echo "Version '${{ steps.version.outputs.VERSION }}'" # You could publish to npm here instead, for example
 ```
 
-You can do this by running the following command from a repo:
+## Outputs
 
-```bash
-mkdir -p .github/workflows && curl https://raw.githubusercontent.com/Financial-Times/origami-labels/v1.0.0/example.yml --output .github/workflows/automatic-tag-and-release.yml
-```
-
-Alternatively, use `origami-version` to calculate a new release version based on the release labels applied to a Github Pull Request without making the new release. Do this by setting the `output_only` option. This is useful to feed into another Github Action for a customised release process.
-
-```yml
-on:
-  pull_request:
-    types: [closed] # Merged pull-requests count as closed pull-requests.
-
-jobs:
-  create-new-version:
-    runs-on: ubuntu-latest
-    name: Create new version/tag
-    steps:
-      - uses: actions/checkout@f90c7b395dac7c5a277c1a6d93d5057c1cddb74e
-        if: github.event.pull_request.merged # Only run on merged pull-requests
-        with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }} # Checkout the merged commit
-          fetch-depth: 0
-      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/* # Get all tags from the origin
-      - uses: Financial-Times/origami-version@v1.1.2
-        name: Get new version
-        if: github.event.pull_request.merged  # Only run on merged pull-requests
-        with:
-          output_only: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-```
-
-
-
-## Labels
-
-The labels this actions uses are:
-
-- release:major
-- release:minor
-- release:patch
-
-## Development
-
-Work should be based on the `master` branch, with changes PRed in.
-
-If your changes are not breaking, merge them into the `v1` branch, and they'll be picked up by every repo running `v1` automatically.
-
-If your changes ARE breaking, then you should create a `v2` branch based on master and update your chosen repo to use the new workflow.
+- `VERSION`: the semver version to release based on any added Github release labels, or `null` if no release labels were added.
