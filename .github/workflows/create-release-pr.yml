@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build origami-version to use the latest version to version itself
-        runs: npm run build
+        run: npm run build
 
       - name: Find the next version of the project to release
         id: version
