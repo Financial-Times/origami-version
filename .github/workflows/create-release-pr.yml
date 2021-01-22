@@ -6,8 +6,8 @@ name: Create A Release Pull Request
 on:
   pull_request:
     types: [closed] # Merged pull-requests count as closed pull-requests.
-    tags-ignore:
-      - 'v*' # When there are no version tags
+    tags:
+      - '!v*' # When there are no version tags
 jobs:
   create-version-pr:
     name: Create A Pull Request To Release A New Version
