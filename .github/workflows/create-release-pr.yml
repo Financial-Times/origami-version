@@ -30,6 +30,9 @@ jobs:
           ref: ${{ github.event.pull_request.merge_commit_sha }} # Checkout the merged commit
           fetch-depth: 0
 
+      - name: Build origami-version to use the latest version to version itself
+        runs: npm run build
+
       - name: Find the next version of the project to release
         id: version
         uses: ./
