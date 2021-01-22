@@ -1,4 +1,3 @@
-
 # Origami Version
 
 GitHub action to calculate the version to release based on the release labels a pull-request has.
