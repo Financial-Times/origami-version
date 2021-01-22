@@ -33,8 +33,6 @@ jobs:
       - name: Find the next version of the project to release
         id: version
         uses: ./
-        with:
-          github-token: ${{ secrets.ORIGAMI_GITHUB_TOKEN }}
 
       - name: Error if the next version wasn't found
         if: steps.version.outputs.VERSION == null
