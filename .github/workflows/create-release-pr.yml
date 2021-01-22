@@ -1,7 +1,3 @@
-# When a pull request is merged with release labels and there are no tags on the
-# commit create a new release PR, with updated package.json, built assets, and
-# tag.
-
 name: Create A Release Pull Request
 on:
   pull_request:
@@ -25,26 +21,21 @@ jobs:
         with:
           node-version: '15.x'
           registry-url: 'https://registry.npmjs.org'
-
       - name: Checkout the project repository
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.pull_request.merge_commit_sha }} # Checkout the merged commit
           fetch-depth: 0
-
       - name: Find the next version of the project to release
         id: version
         uses: Financial-Times/origami-version@v1
         with:
           github-token: ${{ secrets.ORIGAMI_GITHUB_TOKEN }}
-
       - name: Error if the next version wasn't found
         if: steps.version.outputs.VERSION == null
         run: exit 1
-
       - name: Build the new version
         run: npm version ${{ steps.version.outputs.VERSION }} --message '%s' -m '${{ github.event.pull_request.url }}'
-
       - name: Open a pull request for the new version
         uses: peter-evans/create-pull-request@v3
         with:
@@ -52,7 +43,6 @@ jobs:
           body: This is an automated pull request to release version ${{ steps.version.outputs.VERSION }} with changes including ${{ github.event.pull_request.url }}.
           branch: release-${ steps.version.outputs.VERSION }
           base: ${{ github.base_ref }}
-
       - name: Log details
         run: |
           echo "Version '${{ steps.version.outputs.VERSION }}'"
