@@ -40,7 +40,6 @@ jobs:
       - name: Find the next version of the project to release
         uses: Financial-Times/origami-version@v1
         with:
-          output-only: true
           github-token: ${{ secrets.ORIGAMI_GITHUB_TOKEN }}
 
       - name: Error if the next version wasn't found
