@@ -32,17 +32,17 @@ jobs:
           fetch-depth: 0
 
       - name: Find the next version of the project to release
+        id: version
         uses: Financial-Times/origami-version@v1
         with:
           output-only: true
           github-token: ${{ secrets.ORIGAMI_GITHUB_TOKEN }}
 
       - name: Error if the next version wasn't found
-        if: secrets.ORIGAMI_GITHUB_TOKEN == null
+        if: steps.version.outputs.VERSION == null
         run: exit 1
 
       - name: Build the new version
-        id: version
         run: |
           npm run build &&
           git add dist &&
