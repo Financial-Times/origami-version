@@ -32,7 +32,7 @@ jobs:
 
       - name: Find the next version of the project to release
         id: version
-        uses: Financial-Times/origami-version@v1
+        uses: ./
         with:
           github-token: ${{ secrets.ORIGAMI_GITHUB_TOKEN }}
 
@@ -40,7 +40,7 @@ jobs:
         if: steps.version.outputs.VERSION == null
         run: exit 1
 
-      - name: Build the new version
+      - name: Update the version
         run: npm version ${{ steps.version.outputs.VERSION }} --message '%s' -m '${{ github.event.pull_request.url }}'
 
       - name: Open a pull request for the new version

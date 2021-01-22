@@ -38,7 +38,7 @@ jobs:
           fetch-depth: 0
 
       - name: Find the next version of the project to release
-        uses: Financial-Times/origami-version@v1
+        uses: Financial-Times/origami-version@v2
         with:
           github-token: ${{ secrets.ORIGAMI_GITHUB_TOKEN }}
 
