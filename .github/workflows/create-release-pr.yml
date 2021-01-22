@@ -13,10 +13,10 @@ jobs:
     # Only run on merged pull-requests with a release label
     if: |
       github.event.pull_request.merged &&
-      (contains(github.event.issue.labels.*.name, 'release:beta') ||
-      contains(github.event.issue.labels.*.name, 'release:major') ||
-      contains(github.event.issue.labels.*.name, 'release:minor') ||
-      contains(github.event.issue.labels.*.name, 'release:patch'))
+      (contains(github.event.pull_request.labels.*.name, 'release:beta') ||
+      contains(github.event.pull_request.labels.*.name, 'release:major') ||
+      contains(github.event.pull_request.labels.*.name, 'release:minor') ||
+      contains(github.event.pull_request.labels.*.name, 'release:patch'))
     steps:
       - name: Set up node
         uses: actions/setup-node@v2.1.4
