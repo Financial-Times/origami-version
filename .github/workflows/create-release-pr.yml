@@ -43,11 +43,7 @@ jobs:
         run: exit 1
 
       - name: Build the new version
-        run: |
-          npm run build &&
-          git add dist &&
-          git commit -m 'Build version ${{ steps.version.outputs.VERSION }} of the action.' -m '${{ github.event.pull_request.url }}' &&
-          npm version ${{ steps.version.outputs.VERSION }}
+        run: npm version ${{ steps.version.outputs.VERSION }} --message '%s' -m '${{ github.event.pull_request.url }}'
 
       - name: Open a pull request for the new version
         uses: peter-evans/create-pull-request@v3

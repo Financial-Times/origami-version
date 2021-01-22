@@ -4,7 +4,8 @@
   "description": "Automated versioning for github projects based on semver labels",
   "scripts": {
     "test": "eslint . && mocha --forbid-only \"test/**/*.test.js\"",
-    "build": "webpack bundle --entry ./index.js --mode production --output-path dist  --target node"
+    "build": "webpack bundle --entry ./index.js --mode production --output-path dist  --target node",
+    "preversion": "npm run build && git add dist"
   },
   "keywords": [],
   "author": "Jake Champion <me@jakechampion.name>",
