@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/JakeChampion/test#readme",
   "devDependencies": {
-    "eslint": "^7.18.0",
+    "eslint": "^7.19.0",
     "mocha": "^8.2.1",
     "proclaim": "^3.6.0",
     "webpack": "^5.19.0",
