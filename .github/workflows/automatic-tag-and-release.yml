@@ -17,7 +17,7 @@ jobs:
       - run: git config --global user.email "origami.support@ft.com";
       - run: git config --global user.name "origamiserviceuser [bot]";
       - name: Use Node.js
-        uses: actions/setup-node@v2.1.4
+        uses: actions/setup-node@v2.1.5
         with:
           node-version: '12.x'
       - run: npm ci
