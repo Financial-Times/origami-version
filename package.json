@@ -12,7 +12,7 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^2.2.0",
-    "semver": "^7.3.4"
+    "semver": "^7.5.2"
   },
   "main": "./index.js",
   "repository": {
